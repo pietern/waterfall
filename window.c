@@ -10,8 +10,8 @@
 #include "wedge.h"
 #include "common.h"
 
-#define SCALE_WIDTH 36
-#define TICK_MARGIN 4
+#define SCALE_WIDTH 30
+#define TICK_MARGIN 3
 
 // User coordinates of viewport
 typedef struct {
@@ -832,7 +832,7 @@ static void _window_frequency_scale_draw_axis(window_state_t *state, cairo_t *cr
         cairo_stroke(cr);
 
         cairo_save(cr);
-        cairo_translate(cr, x + 3, SCALE_WIDTH / 2.0f + font_size);
+        cairo_translate(cr, x + 3, SCALE_WIDTH / 2.0f);
         cairo_set_font_size(cr, font_size);
         cairo_show_text(cr, buf);
         cairo_restore(cr);
@@ -853,8 +853,8 @@ static void _window_frequency_scale_draw_axis(window_state_t *state, cairo_t *cr
         cairo_matrix_transform_point(&state->window_to_user, &x, &y);
 
         cairo_new_path(cr);
-        cairo_move_to(cr, x, TICK_MARGIN);
-        cairo_line_to(cr, x, TICK_MARGIN + (1.0f * SCALE_WIDTH / 3.0f));
+        cairo_move_to(cr, x, SCALE_WIDTH - TICK_MARGIN);
+        cairo_line_to(cr, x, (2.0f * SCALE_WIDTH / 3.0f) - TICK_MARGIN);
         cairo_set_line_width(cr, scale);
         cairo_stroke(cr);
 
@@ -1107,9 +1107,9 @@ static GtkWidget *_create_drawing_areas(window_state_t *state) {
     gtk_grid_set_row_homogeneous(GTK_GRID(grid), FALSE);
     gtk_grid_set_column_homogeneous(GTK_GRID(grid), FALSE);
 
-    gtk_grid_attach(GTK_GRID(grid), time_scale, 0, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), frequency_scale, 1, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), drawing_area, 1, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), time_scale, 0, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), frequency_scale, 1, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), drawing_area, 1, 1, 1, 1);
 
     state->drawing_area = drawing_area;
     state->time_scale = time_scale;
