@@ -1,0 +1,8 @@
+main.o: main.c stream.h window.h wedge.h color.h stream_raw.h \
+ stream_wav.h
+stream.o: stream.c stream.h
+window.o: window.c window.h stream.h wedge.h common.h
+wedge.o: wedge.c wedge.h stream.h color.h
+color.o: color.c color.h
+stream_raw.o: stream_raw.c stream_raw.h stream.h
+stream_wav.o: stream_wav.c stream_raw.h stream.h
