@@ -674,56 +674,43 @@ static void _window_time_scale_draw_axis(window_state_t *state, cairo_t *cr) {
     double t_min = v->sdy;
     double t_max = v->soy;
 
-    // Start just outside the visible area so that text that overflows into
-    // the visible area is still drawn.
-    double tick = major_tick_delta * ceil(t_min / major_tick_delta - 1);
+    // Start further left of the visible area so that labels that start
+    // off screen will overflow on screen.
+    int64_t p_min = floor(t_min / minor_tick_delta) - 10;
+    int64_t p_max = ceil(t_max / minor_tick_delta) + 1;
 
-    // Continue into just outside the visible area.
-    while (tick < (t_max + major_tick_delta)) {
+    for (int64_t p = p_min; p < p_max; p++) {
+        double tick = p * minor_tick_delta;
         double x = 0.0f;
         double y = tick;
         char buf[32];
 
-        _to_human_time(buf, sizeof(buf), tick, major_tick_delta);
-
         cairo_matrix_transform_point(&state->user_to_scaled, &x, &y);
         cairo_matrix_transform_point(&state->window_to_user, &x, &y);
 
-        cairo_new_path(cr);
-        cairo_move_to(cr, SCALE_WIDTH - TICK_MARGIN, y);
-        cairo_line_to(cr, TICK_MARGIN, y);
-        cairo_set_line_width(cr, scale);
-        cairo_stroke(cr);
+        if (p % 10 == 0) {
+            _to_human_time(buf, sizeof(buf), tick, major_tick_delta);
 
-        cairo_save(cr);
-        cairo_translate(cr, SCALE_WIDTH / 2.0f, y - 3);
-        cairo_rotate(cr, -0.25 * M_TAU);
-        cairo_set_font_size(cr, font_size);
-        cairo_show_text(cr, buf);
-        cairo_restore(cr);
+            cairo_new_path(cr);
+            cairo_move_to(cr, SCALE_WIDTH - TICK_MARGIN, y);
+            cairo_line_to(cr, TICK_MARGIN, y);
+            cairo_set_line_width(cr, scale);
+            cairo_stroke(cr);
 
-        tick += major_tick_delta;
-    }
+            cairo_save(cr);
+            cairo_translate(cr, SCALE_WIDTH / 2.0f, y - 3);
+            cairo_rotate(cr, -0.25 * M_TAU);
+            cairo_set_font_size(cr, font_size);
+            cairo_show_text(cr, buf);
+            cairo_restore(cr);
+        } else {
+            cairo_new_path(cr);
+            cairo_move_to(cr, SCALE_WIDTH - TICK_MARGIN, y);
+            cairo_line_to(cr, (2.0f * SCALE_WIDTH / 3.0f) - TICK_MARGIN, y);
+            cairo_set_line_width(cr, scale);
+            cairo_stroke(cr);
 
-    // Start just outside the visible area so that text that overflows into
-    // the visible area is still drawn.
-    tick = minor_tick_delta * (ceil(t_min / minor_tick_delta) - 1);
-
-    // Continue into just outside the visible area.
-    while (tick < (t_max + minor_tick_delta)) {
-        double x = 0.0f;
-        double y = tick;
-
-        cairo_matrix_transform_point(&state->user_to_scaled, &x, &y);
-        cairo_matrix_transform_point(&state->window_to_user, &x, &y);
-
-        cairo_new_path(cr);
-        cairo_move_to(cr, SCALE_WIDTH - TICK_MARGIN, y);
-        cairo_line_to(cr, (2.0f * SCALE_WIDTH / 3.0f) - TICK_MARGIN, y);
-        cairo_set_line_width(cr, scale);
-        cairo_stroke(cr);
-
-        tick += minor_tick_delta;
+        }
     }
 }
 
@@ -811,54 +798,41 @@ static void _window_frequency_scale_draw_axis(window_state_t *state, cairo_t *cr
     double t_min = state->stream->center_freq + state->stream->sample_rate * v->sox;
     double t_max = state->stream->center_freq + state->stream->sample_rate * v->sdx;
 
-    // Start just outside the visible area so that text that overflows into
-    double tick = major_tick_delta * ceil(t_min / major_tick_delta - 1);
+    // Start further left of the visible area so that labels that start
+    // off screen will overflow on screen.
+    int64_t p_min = floor(t_min / minor_tick_delta) - 10;
+    int64_t p_max = ceil(t_max / minor_tick_delta) + 1;
 
-    // Continue into just outside the visible area.
-    while (tick < (t_max + major_tick_delta)) {
+    for (int64_t p = p_min; p < p_max; p++) {
+        double tick = p * minor_tick_delta;
         double x = (tick - state->stream->center_freq) / state->stream->sample_rate;
         double y = 0.0f;
         char buf[32];
 
-        _to_human_frequency(state, buf, sizeof(buf), tick, major_tick_delta);
-
         cairo_matrix_transform_point(&state->user_to_scaled, &x, &y);
         cairo_matrix_transform_point(&state->window_to_user, &x, &y);
 
-        cairo_new_path(cr);
-        cairo_move_to(cr, x, SCALE_WIDTH - TICK_MARGIN);
-        cairo_line_to(cr, x, TICK_MARGIN);
-        cairo_set_line_width(cr, scale);
-        cairo_stroke(cr);
+        if (p % 10 == 0) {
+            _to_human_frequency(state, buf, sizeof(buf), tick, major_tick_delta);
 
-        cairo_save(cr);
-        cairo_translate(cr, x + 3, SCALE_WIDTH / 2.0f);
-        cairo_set_font_size(cr, font_size);
-        cairo_show_text(cr, buf);
-        cairo_restore(cr);
+            cairo_new_path(cr);
+            cairo_move_to(cr, x, SCALE_WIDTH - TICK_MARGIN);
+            cairo_line_to(cr, x, TICK_MARGIN);
+            cairo_set_line_width(cr, scale);
+            cairo_stroke(cr);
 
-        tick += major_tick_delta;
-    }
-
-    // Start just outside the visible area so that text that overflows into
-    // the visible area is still drawn.
-    tick = minor_tick_delta * (ceil(t_min / minor_tick_delta) - 1);
-
-    // Continue into just outside the visible area.
-    while (tick < (t_max + minor_tick_delta)) {
-        double x = (tick - state->stream->center_freq) / state->stream->sample_rate;
-        double y = 0.0f;
-
-        cairo_matrix_transform_point(&state->user_to_scaled, &x, &y);
-        cairo_matrix_transform_point(&state->window_to_user, &x, &y);
-
-        cairo_new_path(cr);
-        cairo_move_to(cr, x, SCALE_WIDTH - TICK_MARGIN);
-        cairo_line_to(cr, x, (2.0f * SCALE_WIDTH / 3.0f) - TICK_MARGIN);
-        cairo_set_line_width(cr, scale);
-        cairo_stroke(cr);
-
-        tick += minor_tick_delta;
+            cairo_save(cr);
+            cairo_translate(cr, x + 3, SCALE_WIDTH / 2.0f);
+            cairo_set_font_size(cr, font_size);
+            cairo_show_text(cr, buf);
+            cairo_restore(cr);
+        } else {
+            cairo_new_path(cr);
+            cairo_move_to(cr, x, SCALE_WIDTH - TICK_MARGIN);
+            cairo_line_to(cr, x, (2.0f * SCALE_WIDTH / 3.0f) - TICK_MARGIN);
+            cairo_set_line_width(cr, scale);
+            cairo_stroke(cr);
+        }
     }
 }
 
