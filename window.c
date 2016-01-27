@@ -676,7 +676,7 @@ static void _window_time_scale_draw_axis(window_state_t *state, cairo_t *cr) {
 
     // Start just outside the visible area so that text that overflows into
     // the visible area is still drawn.
-    double tick = major_tick_delta * ceil(t_min / major_tick_delta) - major_tick_delta;
+    double tick = major_tick_delta * ceil(t_min / major_tick_delta - 1);
 
     // Continue into just outside the visible area.
     while (tick < (t_max + major_tick_delta)) {
@@ -812,7 +812,7 @@ static void _window_frequency_scale_draw_axis(window_state_t *state, cairo_t *cr
     double t_max = state->stream->center_freq + state->stream->sample_rate * v->sdx;
 
     // Start just outside the visible area so that text that overflows into
-    double tick = major_tick_delta * ceil(t_min / major_tick_delta) - major_tick_delta;
+    double tick = major_tick_delta * ceil(t_min / major_tick_delta - 1);
 
     // Continue into just outside the visible area.
     while (tick < (t_max + major_tick_delta)) {
