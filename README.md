@@ -1,6 +1,6 @@
 # waterfall
 
-Interactive frequency spectrum analysis.
+Interactive spectrum analysis.
 
 ## Usage
 
