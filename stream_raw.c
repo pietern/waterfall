@@ -72,6 +72,33 @@ stream_raw__read(const stream_handler_t *h,
 }
 
 static void
+_raw_u8_process(const void *data,
+                fftw_complex *out,
+                uint64_t length)
+{
+  const uint8_t *in = (const uint8_t *) data;
+  uint64_t i;
+
+  for (i = 0; i < length; i++) {
+    out[i][0] = (2.0f * (float) in[i * 2 + 0]) / 255 - 1.0f;
+    out[i][1] = (2.0f * (float) in[i * 2 + 1]) / 255 - 1.0f;
+  }
+}
+
+static _raw_t raw_u8 = {
+  .bytes = 1,
+  .process = &_raw_u8_process,
+};
+
+stream_handler_t stream_u8_handler = {
+  .init = &stream_raw__init,
+  .to_byte_offset = &stream_raw__to_byte_offset,
+  .to_byte_length = &stream_raw__to_byte_length,
+  .read = &stream_raw__read,
+  .data = &raw_u8,
+};
+
+static void
 _raw_s8_process(const void *data,
                 fftw_complex *out,
                 uint64_t length)

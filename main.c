@@ -26,7 +26,7 @@ void usage(__attribute__((unused)) int argc, char **argv) {
     fprintf(stderr, "Usage: %s [OPTION]... FILE\n", argv[0]);
     fprintf(stderr, "Analyze frequency spectrum of signal in FILE\n");
     fprintf(stderr, "\n");
-    fprintf(stderr, "  -t TYPE    File type of FILE [wav,s8,s16,s32,f32]\n");
+    fprintf(stderr, "  -t TYPE    File type of FILE [wav,u8,s8,s16,s32,f32]\n");
     fprintf(stderr, "  -r RATE    Sample rate of signal\n");
     fprintf(stderr, "  -c FREQ    Center frequency of signal\n");
     fprintf(stderr, "\n");
@@ -107,6 +107,8 @@ int main(int argc, char **argv) {
     if (global->type != NULL) {
         if (strcasecmp(global->type, "wav") == 0) {
             handler = &stream_wav_handler;
+        } else if (strcasecmp(global->type, "u8") == 0) {
+            handler = &stream_u8_handler;
         } else if (strcasecmp(global->type, "s8") == 0) {
             handler = &stream_s8_handler;
         } else if (strcasecmp(global->type, "s16") == 0) {
