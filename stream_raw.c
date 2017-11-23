@@ -79,9 +79,10 @@ _raw_u8_process(const void *data,
   const uint8_t *in = (const uint8_t *) data;
   uint64_t i;
 
+  // See http://cgit.osmocom.org/gr-osmosdr/tree/lib/rtl/rtl_source_c.cc#n176
   for (i = 0; i < length; i++) {
-    out[i][0] = (2.0f * (float) in[i * 2 + 0]) / 255 - 1.0f;
-    out[i][1] = (2.0f * (float) in[i * 2 + 1]) / 255 - 1.0f;
+    out[i][0] = ((float) in[i * 2 + 0] - 127.4f) / 128.0f;
+    out[i][1] = ((float) in[i * 2 + 1] - 127.4f) / 128.0f;
   }
 }
 
