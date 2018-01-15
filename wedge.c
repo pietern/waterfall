@@ -95,10 +95,12 @@ static void wedge_process(wedge_t *w) {
         stream_fft(stream, w->start + i * w->skip, mag, w->width);
 
         // Normalize and populate wedge buffer
+        int min = -100;
+        int max = -60;
         for (j = 0; j < w->width; j++) {
             int16_t val;
 
-            val = 255 - (-3 * mag[j] - 128);
+            val = (255 * (mag[j] - min)) / (max - min);
 
             // Clamp
             if (val > 255) {
